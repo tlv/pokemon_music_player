@@ -12,6 +12,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ introPath, loopPath })
     const introBufferRef = useRef<AudioBuffer | null>(null);
     const loopBufferRef = useRef<AudioBuffer | null>(null);
     const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
+    const loopSourceRef = useRef<AudioBufferSourceNode | null>(null);
+    const startTimeRef = useRef<number>(0);
+    const pausedAtRef = useRef<number>(0);
+    const isIntroRef = useRef<boolean>(true);
 
     // Load the audio files once on component mount
     useEffect(() => {
@@ -40,14 +44,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ introPath, loopPath })
             }
         };
 
+        // Reset state when component remounts (when track changes)
+        setIsPlaying(false);
+        isIntroRef.current = true;
+        pausedAtRef.current = 0;
+
         loadAudioFiles();
 
         // Cleanup function
         return () => {
-            if (sourceNodeRef.current) {
-                sourceNodeRef.current.stop();
-                sourceNodeRef.current.disconnect();
-            }
+            stopSound();
             if (audioContextRef.current) {
                 audioContextRef.current.close();
             }
@@ -66,6 +72,10 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ introPath, loopPath })
                 audioContextRef.current.resume();
             }
 
+            // Start from the beginning
+            isIntroRef.current = true;
+            pausedAtRef.current = 0;
+
             // Create a new buffer source for the intro
             const introSource = audioContextRef.current.createBufferSource();
             introSource.buffer = introBufferRef.current;
@@ -77,11 +87,13 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ introPath, loopPath })
             loopSource.loop = true;
             loopSource.connect(audioContextRef.current.destination);
 
-            // Set the current source for stopping later
+            // Save references
             sourceNodeRef.current = introSource;
+            loopSourceRef.current = loopSource;
 
             // Start the intro immediately
             introSource.start();
+            startTimeRef.current = audioContextRef.current.currentTime;
             setStatus('Playing intro');
 
             // Schedule the loop to start exactly when the intro ends
@@ -91,6 +103,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ introPath, loopPath })
             // When intro ends, update the current source reference
             introSource.onended = () => {
                 sourceNodeRef.current = loopSource;
+                isIntroRef.current = false;
                 setStatus('Playing loop');
             };
 
@@ -107,20 +120,23 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ introPath, loopPath })
                 sourceNodeRef.current.stop();
                 sourceNodeRef.current.disconnect();
                 sourceNodeRef.current = null;
+
+                if (loopSourceRef.current && loopSourceRef.current !== sourceNodeRef.current) {
+                    loopSourceRef.current.stop();
+                    loopSourceRef.current.disconnect();
+                    loopSourceRef.current = null;
+                }
+
+                // Reset pause position
+                pausedAtRef.current = 0;
+                isIntroRef.current = true;
+
                 setIsPlaying(false);
                 setStatus('Stopped');
             } catch (error) {
                 console.error('Error stopping sound:', error);
                 setStatus(`Error stopping: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
-        }
-    };
-
-    const handleClick = () => {
-        if (!isPlaying) {
-            playSound();
-        } else {
-            stopSound();
         }
     };
 
@@ -135,27 +151,56 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ introPath, loopPath })
             }}>
                 Status: {status}
             </div>
-            <button
-                onClick={handleClick}
-                style={{
-                    padding: '15px 30px',
-                    fontSize: '18px',
-                    backgroundColor: isPlaying ? '#f44336' : '#4CAF50',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s'
-                }}
-                onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = isPlaying ? '#da190b' : '#45a049';
-                }}
-                onMouseOut={(e) => {
-                    e.currentTarget.style.backgroundColor = isPlaying ? '#f44336' : '#4CAF50';
-                }}
-            >
-                {isPlaying ? 'Stop Music' : 'Play Music'}
-            </button>
+
+            <div style={{ display: 'flex', gap: '15px' }}>
+                <button
+                    onClick={playSound}
+                    disabled={isPlaying}
+                    style={{
+                        padding: '15px 30px',
+                        fontSize: '18px',
+                        backgroundColor: isPlaying ? '#ccc' : '#4CAF50',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: isPlaying ? 'default' : 'pointer',
+                        transition: 'background-color 0.3s',
+                        opacity: isPlaying ? 0.7 : 1
+                    }}
+                    onMouseOver={(e) => {
+                        if (!isPlaying) e.currentTarget.style.backgroundColor = '#45a049';
+                    }}
+                    onMouseOut={(e) => {
+                        if (!isPlaying) e.currentTarget.style.backgroundColor = '#4CAF50';
+                    }}
+                >
+                    Play
+                </button>
+
+                <button
+                    onClick={stopSound}
+                    disabled={!isPlaying}
+                    style={{
+                        padding: '15px 30px',
+                        fontSize: '18px',
+                        backgroundColor: !isPlaying ? '#ccc' : '#f44336',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: !isPlaying ? 'default' : 'pointer',
+                        transition: 'background-color 0.3s',
+                        opacity: !isPlaying ? 0.7 : 1
+                    }}
+                    onMouseOver={(e) => {
+                        if (isPlaying) e.currentTarget.style.backgroundColor = '#da190b';
+                    }}
+                    onMouseOut={(e) => {
+                        if (isPlaying) e.currentTarget.style.backgroundColor = '#f44336';
+                    }}
+                >
+                    Stop
+                </button>
+            </div>
         </div>
     );
 }; 
