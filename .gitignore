@@ -2,3 +2,5 @@ tracks_raw/**
 tracks/**
 **/.DS_Store
 node_modules/**
+.env
+.vite/**
