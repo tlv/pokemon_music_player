@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Music Player</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button.playing {
+            background-color: #f44336;
+        }
+
+        button.playing:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="playButton">Play Music</button>
+
+    <script>
+        const playButton = document.getElementById('playButton');
+        let isPlaying = false;
+        let audioContext = null;
+        let introBuffer = null;
+        let loopBuffer = null;
+        let currentSource = null;
+        let startTime = 0;
+        let isIntroPlaying = false;
+
+        // Create audio context and load buffers
+        async function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Load both audio files
+            const [introResponse, loopResponse] = await Promise.all([
+                fetch('tracks/route/clipped/1_50_cycling_intro.mp3'),
+                fetch('tracks/route/clipped/1_50_cycling_loop.mp3')
+            ]);
+
+            const [introArrayBuffer, loopArrayBuffer] = await Promise.all([
+                introResponse.arrayBuffer(),
+                loopResponse.arrayBuffer()
+            ]);
+
+            introBuffer = await audioContext.decodeAudioData(introArrayBuffer);
+            loopBuffer = await audioContext.decodeAudioData(loopArrayBuffer);
+        }
+
+        function playIntro() {
+            if (!introBuffer) return;
+
+            const source = audioContext.createBufferSource();
+            source.buffer = introBuffer;
+            source.connect(audioContext.destination);
+
+            // Schedule the loop to start exactly when the intro ends
+            const loopSource = audioContext.createBufferSource();
+            loopSource.buffer = loopBuffer;
+            loopSource.loop = true;
+            loopSource.connect(audioContext.destination);
+
+            // Start the intro
+            source.start();
+            isIntroPlaying = true;
+
+            // Schedule the loop to start when the intro ends
+            loopSource.start(audioContext.currentTime + introBuffer.duration);
+
+            currentSource = source;
+            startTime = audioContext.currentTime;
+
+            // When intro ends, clean up and set up for loop
+            source.onended = () => {
+                isIntroPlaying = false;
+                currentSource = loopSource;
+            };
+        }
+
+        function stopPlayback() {
+            if (currentSource) {
+                currentSource.stop();
+                currentSource.disconnect();
+                currentSource = null;
+            }
+        }
+
+        // Initialize audio when the page loads
+        initAudio().catch(console.error);
+
+        playButton.addEventListener('click', async () => {
+            if (!audioContext) {
+                await initAudio();
+            }
+
+            if (!isPlaying) {
+                // Resume audio context if it was suspended
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                // Start playing
+                playIntro();
+                isPlaying = true;
+                playButton.textContent = 'Stop Music';
+                playButton.classList.add('playing');
+            } else {
+                // Stop playing
+                stopPlayback();
+                isPlaying = false;
+                playButton.textContent = 'Play Music';
+                playButton.classList.remove('playing');
+            }
+        });
+    </script>
+</body>
+
+</html>
