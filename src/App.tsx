@@ -292,11 +292,6 @@ function App() {
         fontSize: '14px'
     };
 
-    // Add keyframe animation style for the spinner
-    const spinAnimation = {
-        animation: 'spin 1s linear infinite',
-    };
-
     // Define keyframes for global style
     useEffect(() => {
         // Add keyframes animation to document
