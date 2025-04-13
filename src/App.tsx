@@ -238,10 +238,13 @@ const CITY_TRACKS: Track[] = [
 // Combine all tracks
 const ALL_TRACKS = [...ROUTE_TRACKS, ...CITY_TRACKS];
 
+// Find the Littleroot Town track to use as default
+const DEFAULT_TRACK = ALL_TRACKS.find(track => track.id === "littlerootTown") || ALL_TRACKS[0];
+
 function App() {
-    const [selectedTrack, setSelectedTrack] = useState<Track>(ALL_TRACKS[0]);
+    const [selectedTrack, setSelectedTrack] = useState<Track>(DEFAULT_TRACK);
     const [searchTerm, setSearchTerm] = useState<string>('');
-    const [showRoutes, setShowRoutes] = useState<boolean>(true);
+    const [showRoutes, setShowRoutes] = useState<boolean>(false);
     const [showCities, setShowCities] = useState<boolean>(true);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -547,6 +550,19 @@ function App() {
                     introPath={selectedTrack.introPath}
                     loopPath={selectedTrack.loopPath}
                 />
+
+                {/* Disclaimer message */}
+                <div style={{
+                    marginTop: '30px',
+                    fontSize: '12px',
+                    color: '#888',
+                    textAlign: 'center',
+                    padding: '10px',
+                    borderTop: '1px solid #eee',
+                    width: '100%'
+                }}>
+                    All Pokémon music and content belongs to their respective owners (Nintendo, Game Freak, and The Pokémon Company).
+                </div>
             </div>
         </div>
     );
