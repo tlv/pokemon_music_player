@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AudioPlayer } from './components/AudioPlayer';
 
 interface Track {
@@ -15,134 +15,134 @@ const ROUTE_TRACKS: Track[] = [
     {
         id: "cycling",
         name: "Cycling",
-        introPath: "tracks/route/1_50_cycling_intro.mp3",
-        loopPath: "tracks/route/1_50_cycling_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_50_cycling_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_50_cycling_loop.mp3",
         category: 'route'
     },
     {
         id: "surf",
         name: "Surfing",
-        introPath: "tracks/route/1_76_surf_intro.mp3",
-        loopPath: "tracks/route/1_76_surf_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_76_surf_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_76_surf_loop.mp3",
         category: 'route'
     },
     {
         id: "diving",
         name: "Diving",
-        introPath: "tracks/route/1_87_diving_intro.mp3",
-        loopPath: "tracks/route/1_87_diving_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_87_diving_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_87_diving_loop.mp3",
         category: 'route'
     },
     {
         id: "route101",
         name: "Routes 101, 102, 103",
-        introPath: "tracks/route/1_11_101-103_intro.mp3",
-        loopPath: "tracks/route/1_11_101-103_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_11_101-103_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_11_101-103_loop.mp3",
         category: 'route'
     },
     {
         id: "route104",
         name: "Routes 104, 105, 106, 107, 108, 109, 115, 116",
-        introPath: "tracks/route/1_22_104-109_115-116_intro.mp3",
-        loopPath: "tracks/route/1_22_104-109_115-116_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_22_104-109_115-116_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_22_104-109_115-116_loop.mp3",
         category: 'route'
     },
     {
         id: "route110",
         name: "Routes 110, 112, 114, 117, 118",
-        introPath: "tracks/route/1_43_110_112_114_117-118_intro.mp3",
-        loopPath: "tracks/route/1_43_110_112_114_117-118_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_43_110_112_114_117-118_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_43_110_112_114_117-118_loop.mp3",
         category: 'route'
     },
     {
         id: "route111",
         name: "Route 111",
-        introPath: "tracks/route/1_62_111_intro.mp3",
-        loopPath: "tracks/route/1_62_111_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_62_111_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_62_111_loop.mp3",
         category: 'route'
     },
     {
         id: "route113",
         name: "Route 113",
-        introPath: "tracks/route/1_56_113_intro.mp3",
-        loopPath: "tracks/route/1_56_113_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_56_113_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_56_113_loop.mp3",
         category: 'route'
     },
     {
         id: "route119",
         name: "Routes 119, 129, 130, 131, 132, 133, 134",
-        introPath: "tracks/route/1_64_119_129-134_intro.mp3",
-        loopPath: "tracks/route/1_64_119_129-134_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_64_119_129-134_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_64_119_129-134_loop.mp3",
         category: 'route'
     },
     {
         id: "route120",
         name: "Routes 120, 121, 124, 125, 126, 127, 128",
-        introPath: "tracks/route/1_70_120-121_124-128_intro.mp3",
-        loopPath: "tracks/route/1_70_120-121_124-128_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_70_120-121_124-128_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_70_120-121_124-128_loop.mp3",
         category: 'route'
     },
     {
         id: "route123",
         name: "Routes 122, 123",
-        introPath: "tracks/route/1_04_122-123_intro.mp3",
-        loopPath: "tracks/route/1_04_122-123_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_04_122-123_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_04_122-123_loop.mp3",
         category: 'route'
     },
     {
         id: "petalburgWoods",
         name: "Petalburg Woods",
-        introPath: "tracks/route/1_25_PetalburgWoods_GraniteCave_JaggedPass_FieryPath_intro.mp3",
-        loopPath: "tracks/route/1_25_PetalburgWoods_GraniteCave_JaggedPass_FieryPath_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_25_PetalburgWoods_GraniteCave_JaggedPass_FieryPath_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_25_PetalburgWoods_GraniteCave_JaggedPass_FieryPath_loop.mp3",
         category: 'route'
     },
     {
         id: "mtChimney",
         name: "Mt. Chimney",
-        introPath: "tracks/route/1_60_MtChimney_intro.mp3",
-        loopPath: "tracks/route/1_60_MtChimney_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_60_MtChimney_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_60_MtChimney_loop.mp3",
         category: 'route'
     },
     {
         id: "mtPyreExterior",
         name: "Mt. Pyre Exterior",
-        introPath: "tracks/route/1_79_MtPyreExterior_intro.mp3",
-        loopPath: "tracks/route/1_79_MtPyreExterior_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_79_MtPyreExterior_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_79_MtPyreExterior_loop.mp3",
         category: 'route'
     },
     {
         id: "mtPyreShoalCave",
         name: "Mt. Pyre & Shoal Cave",
-        introPath: "tracks/route/1_77_MtPyre_ShoalCave_intro.mp3",
-        loopPath: "tracks/route/1_77_MtPyre_ShoalCave_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_77_MtPyre_ShoalCave_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_77_MtPyre_ShoalCave_loop.mp3",
         category: 'route'
     },
     {
         id: "caveOfOrigin",
         name: "Cave of Origin & Meteor Falls",
-        introPath: "tracks/route/1_89_CaveOfOrigin_MeteorFalls_intro.mp3",
-        loopPath: "tracks/route/1_89_CaveOfOrigin_MeteorFalls_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_89_CaveOfOrigin_MeteorFalls_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_89_CaveOfOrigin_MeteorFalls_loop.mp3",
         category: 'route'
     },
     {
         id: "abandonedShip",
         name: "Abandoned Ship",
-        introPath: "tracks/route/1_92_AbandonedShip_intro.mp3",
-        loopPath: "tracks/route/1_92_AbandonedShip_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_92_AbandonedShip_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_92_AbandonedShip_loop.mp3",
         category: 'route'
     },
     {
         id: "sealedChamber",
         name: "Sealed Chamber",
-        introPath: "tracks/route/1_93_SealedChamber_intro.mp3",
-        loopPath: "tracks/route/1_93_SealedChamber_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_93_SealedChamber_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_93_SealedChamber_loop.mp3",
         category: 'route'
     },
     {
         id: "victoryRoad",
         name: "Victory Road",
-        introPath: "tracks/route/1_95_VictoryRoad_intro.mp3",
-        loopPath: "tracks/route/1_95_VictoryRoad_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_95_VictoryRoad_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/route/1_95_VictoryRoad_loop.mp3",
         category: 'route'
     }
 ];
@@ -152,85 +152,85 @@ const CITY_TRACKS: Track[] = [
     {
         id: "littlerootTown",
         name: "Littleroot Town",
-        introPath: "tracks/city/1_05_littleroot_town_intro.mp3",
-        loopPath: "tracks/city/1_05_littleroot_town_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_05_littleroot_town_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_05_littleroot_town_loop.mp3",
         category: 'city'
     },
     {
         id: "oldaleTown",
         name: "Oldale Town & Lavaridge Town",
-        introPath: "tracks/city/1_12_oldale_town_lavaridge_town_intro.mp3",
-        loopPath: "tracks/city/1_12_oldale_town_lavaridge_town_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_12_oldale_town_lavaridge_town_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_12_oldale_town_lavaridge_town_loop.mp3",
         category: 'city'
     },
     {
         id: "petalburgCity",
         name: "Petalburg City",
-        introPath: "tracks/city/1_19_petalburg_city_intro.mp3",
-        loopPath: "tracks/city/1_19_petalburg_city_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_19_petalburg_city_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_19_petalburg_city_loop.mp3",
         category: 'city'
     },
     {
         id: "rustboroCity",
         name: "Rustboro, Mauville & Mossdeep Cities",
-        introPath: "tracks/city/1_30_rustboro_city_mauville_city_mossdeep_city_intro.mp3",
-        loopPath: "tracks/city/1_30_rustboro_city_mauville_city_mossdeep_city_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_30_rustboro_city_mauville_city_mossdeep_city_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_30_rustboro_city_mauville_city_mossdeep_city_loop.mp3",
         category: 'city'
     },
     {
         id: "dewfordTown",
         name: "Dewford Town",
-        introPath: "tracks/city/1_37_dewford_town_intro.mp3",
-        loopPath: "tracks/city/1_37_dewford_town_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_37_dewford_town_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_37_dewford_town_loop.mp3",
         category: 'city'
     },
     {
         id: "slateportCity",
         name: "Slateport City",
-        introPath: "tracks/city/1_40_slateport_city_intro.mp3",
-        loopPath: "tracks/city/1_40_slateport_city_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_40_slateport_city_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_40_slateport_city_loop.mp3",
         category: 'city'
     },
     {
         id: "verdanturfTown",
         name: "Verdanturf Town",
-        introPath: "tracks/city/1_51_verdanturf_town_intro.mp3",
-        loopPath: "tracks/city/1_51_verdanturf_town_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_51_verdanturf_town_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_51_verdanturf_town_loop.mp3",
         category: 'city'
     },
     {
         id: "fallarborTown",
         name: "Fallarbor Town",
-        introPath: "tracks/city/1_58_fallarbor_town_intro.mp3",
-        loopPath: "tracks/city/1_58_fallarbor_town_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_58_fallarbor_town_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_58_fallarbor_town_loop.mp3",
         category: 'city'
     },
     {
         id: "fortreeCity",
         name: "Fortree City",
-        introPath: "tracks/city/1_69_fortree_city_intro.mp3",
-        loopPath: "tracks/city/1_69_fortree_city_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_69_fortree_city_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_69_fortree_city_loop.mp3",
         category: 'city'
     },
     {
         id: "lilycoveCity",
         name: "Lilycove City",
-        introPath: "tracks/city/1_73_lilycove_city_intro.mp3",
-        loopPath: "tracks/city/1_73_lilycove_city_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_73_lilycove_city_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_73_lilycove_city_loop.mp3",
         category: 'city'
     },
     {
         id: "sootopolisCity",
         name: "Sootopolis City",
-        introPath: "tracks/city/1_88_sootopolis_city_intro.mp3",
-        loopPath: "tracks/city/1_88_sootopolis_city_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_88_sootopolis_city_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_88_sootopolis_city_loop.mp3",
         category: 'city'
     },
     {
         id: "everGrandeCity",
         name: "Ever Grande City",
-        introPath: "tracks/city/1_97_ever_grande_city_intro.mp3",
-        loopPath: "tracks/city/1_97_ever_grande_city_loop.mp3",
+        introPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_97_ever_grande_city_intro.mp3",
+        loopPath: "https://tlv-emerald-music.s3.amazonaws.com/city/1_97_ever_grande_city_loop.mp3",
         category: 'city'
     }
 ];
@@ -243,6 +243,7 @@ function App() {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [showRoutes, setShowRoutes] = useState<boolean>(true);
     const [showCities, setShowCities] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const filteredTracks = useMemo(() => {
         return ALL_TRACKS.filter(track =>
@@ -259,7 +260,10 @@ function App() {
     }, [filteredTracks]);
 
     const selectTrack = (track: Track) => {
+        setIsLoading(true);
         setSelectedTrack(track);
+        // Reset loading state after a delay to give the AudioPlayer time to start loading
+        setTimeout(() => setIsLoading(false), 1000);
     };
 
     // Section header style
@@ -287,6 +291,29 @@ function App() {
         fontStyle: 'italic',
         fontSize: '14px'
     };
+
+    // Add keyframe animation style for the spinner
+    const spinAnimation = {
+        animation: 'spin 1s linear infinite',
+    };
+
+    // Define keyframes for global style
+    useEffect(() => {
+        // Add keyframes animation to document
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(styleElement);
+
+        // Clean up
+        return () => {
+            document.head.removeChild(styleElement);
+        };
+    }, []);
 
     return (
         <div style={{
@@ -495,7 +522,21 @@ function App() {
                         fontSize: '18px',
                         color: '#333'
                     }}>
-                        {selectedTrack.name}
+                        {isLoading ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ marginRight: '10px' }}>Loading...</span>
+                                <div style={{
+                                    width: '20px',
+                                    height: '20px',
+                                    border: '3px solid #f3f3f3',
+                                    borderTop: '3px solid #3498db',
+                                    borderRadius: '50%',
+                                    animation: 'spin 1s linear infinite',
+                                }}></div>
+                            </div>
+                        ) : (
+                            selectedTrack.name
+                        )}
                     </div>
                     <div style={{
                         fontSize: '14px',
